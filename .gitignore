@@ -1,0 +1,63 @@
+# =========================
+# IntelliJ IDEA
+# =========================
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# =========================
+# Java / Maven
+# =========================
+**/target/
+.mvn/wrapper/maven-wrapper.jar
+
+# =========================
+# Environment / Secrets
+# =========================
+**/.env
+**/.env.*
+!**/.env.example
+
+# Local Spring configuration
+**/application-local.properties
+
+# =========================
+# Node / React
+# =========================
+**/node_modules/
+**/dist/
+**/build/
+
+# =========================
+# VS Code
+# =========================
+.vscode/
+
+# =========================
+# NetBeans
+# =========================
+**/nbproject/private/
+**/nbbuild/
+**/dist/
+**/nbdist/
+**/.nb-gradle/
+
+# =========================
+# STS / Eclipse
+# =========================
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings/
+.springBeans
+.sts4-cache
+
+# =========================
+# OS
+# =========================
+.DS_Store
+Thumbs.db
+
+
