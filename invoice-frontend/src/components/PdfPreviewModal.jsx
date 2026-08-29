@@ -1,6 +1,10 @@
 import { useState, useEffect } from "react";
+import { Download, FileText } from "lucide-react";
 import axiosInstance from "../api/axiosInstance.js";
-import { Download } from "lucide-react";
+
+function isMobileDevice() {
+  return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+}
 
 export default function PdfPreviewModal({
   isOpen,
@@ -11,6 +15,7 @@ export default function PdfPreviewModal({
   const [pdfUrl, setPdfUrl] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const isMobile = isMobileDevice();
 
   useEffect(() => {
     if (!isOpen || !invoiceId) return;
@@ -48,6 +53,11 @@ export default function PdfPreviewModal({
     link.remove();
   };
 
+  const handleOpen = () => {
+    if (!pdfUrl) return;
+    window.open(pdfUrl, "_blank", "noopener,noreferrer");
+  };
+
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg w-full max-w-3xl h-[85vh] flex flex-col">
@@ -83,6 +93,30 @@ export default function PdfPreviewModal({
           ) : error ? (
             <div className="h-full flex items-center justify-center text-red-600 dark:text-red-400 text-sm">
               {error}
+            </div>
+          ) : isMobile ? (
+            <div className="h-full flex flex-col items-center justify-center gap-4 px-6 text-center">
+              <FileText
+                size={48}
+                className="text-gray-400 dark:text-gray-500"
+              />
+              <p className="text-gray-600 dark:text-gray-300 text-sm">
+                Inline preview isn't supported on this device.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <button
+                  onClick={handleOpen}
+                  className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700"
+                >
+                  Open PDF
+                </button>
+                <button
+                  onClick={handleDownload}
+                  className="border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-gray-700"
+                >
+                  Download PDF
+                </button>
+              </div>
             </div>
           ) : (
             <iframe
