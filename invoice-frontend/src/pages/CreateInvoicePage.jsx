@@ -90,7 +90,7 @@ export default function CreateInvoicePage() {
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white mt-2 mb-6">Create Invoice</h1>
 
         <form onSubmit={handleSubmit(onValid)} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 space-y-6">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Client</label>
               <select
@@ -196,7 +196,7 @@ export default function CreateInvoicePage() {
             )}
           </div>
 
-          <div className="grid grid-cols-2 gap-4 items-end">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-end">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tax %</label>
               <input

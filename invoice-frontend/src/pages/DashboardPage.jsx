@@ -1,14 +1,15 @@
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext.jsx';
-import { getInvoices } from '../api/invoiceApi.js';
-import ThemeToggle from '../components/ThemeToggle.jsx';
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext.jsx";
+import { getInvoices } from "../api/invoiceApi.js";
+import ThemeToggle from "../components/ThemeToggle.jsx";
+import { LogOut } from "lucide-react";
 
 const statusColors = {
-  DRAFT: 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-200',
-  SENT: 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200',
-  PAID: 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-200',
-  OVERDUE: 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-200',
+  DRAFT: "bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-200",
+  SENT: "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200",
+  PAID: "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-200",
+  OVERDUE: "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-200",
 };
 
 export default function DashboardPage() {
@@ -23,11 +24,11 @@ export default function DashboardPage() {
   }, []);
 
   const outstanding = invoices
-    .filter((inv) => inv.status === 'SENT' || inv.status === 'OVERDUE')
+    .filter((inv) => inv.status === "SENT" || inv.status === "OVERDUE")
     .reduce((sum, inv) => sum + Number(inv.total), 0);
 
   const paid = invoices
-    .filter((inv) => inv.status === 'PAID')
+    .filter((inv) => inv.status === "PAID")
     .reduce((sum, inv) => sum + Number(inv.total), 0);
 
   const recentInvoices = [...invoices]
@@ -36,106 +37,140 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-8 transition-colors">
-      <div className="max-w-5xl mx-auto">
+      <div className="max-w-5xl mx-auto p-4 sm:p-8">
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">InvoiceApp Dashboard</h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Logged in as {email}</p>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+              InvoiceApp Dashboard
+            </h1>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+              Logged in as {email}
+            </p>
           </div>
           <div className="flex items-center gap-3">
             <ThemeToggle />
             <button
               onClick={logout}
-              className="text-sm text-red-600 dark:text-red-400 font-medium hover:underline"
+              className="flex items-center gap-1.5 text-sm text-red-600 dark:text-red-400 font-medium hover:underline"
+              aria-label="Log Out"
             >
-              Log Out
+              <LogOut size={25} />
+              <span className="hidden sm:inline">Log Out</span>
             </button>
           </div>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
-            <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Outstanding</p>
-            <p className="text-3xl font-bold text-orange-600 dark:text-orange-400">
-              {loading ? '—' : `$${outstanding.toFixed(2)}`}
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
+              Outstanding
             </p>
-            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Sent + Overdue invoices</p>
+            <p className="text-3xl font-bold text-orange-600 dark:text-orange-400">
+              {loading ? "—" : `$${outstanding.toFixed(2)}`}
+            </p>
+            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+              Sent + Overdue invoices
+            </p>
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
-            <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Paid</p>
-            <p className="text-3xl font-bold text-green-600 dark:text-green-400">
-              {loading ? '—' : `$${paid.toFixed(2)}`}
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
+              Paid
             </p>
-            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Total collected</p>
+            <p className="text-3xl font-bold text-green-600 dark:text-green-400">
+              {loading ? "—" : `$${paid.toFixed(2)}`}
+            </p>
+            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+              Total collected
+            </p>
           </div>
         </div>
 
-        <div className="flex gap-4 mb-8">
+        <div className="flex gap-2 sm:gap-3 mb-8">
           <Link
             to="/invoices/new"
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700"
+            className="flex-1 bg-blue-600 text-white px-2 sm:px-4 py-2 rounded-lg font-medium hover:bg-blue-700 text-sm sm:text-base"
           >
             + New Invoice
           </Link>
           <Link
             to="/clients"
-            className="border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-gray-700"
+            className="flex-1 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 px-2 sm:px-4 py-2 rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-gray-700 text-sm sm:text-base"
           >
             Manage Clients
           </Link>
           <Link
             to="/invoices"
-            className="border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-gray-700"
+            className="flex-1 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 px-2 sm:px-4 py-2 rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-gray-700 text-sm sm:text-base"
           >
             All Invoices
           </Link>
         </div>
-
         <div>
-          <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-3">Recent Invoices</h2>
+          <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-3">
+            Recent Invoices
+          </h2>
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
             {loading ? (
-              <p className="p-6 text-gray-500 dark:text-gray-400 text-sm">Loading...</p>
+              <p className="p-6 text-gray-500 dark:text-gray-400 text-sm">
+                Loading...
+              </p>
             ) : recentInvoices.length === 0 ? (
               <p className="p-6 text-gray-500 dark:text-gray-400 text-sm">
-                No invoices yet.{' '}
-                <Link to="/invoices/new" className="text-blue-600 dark:text-blue-400 hover:underline">
+                No invoices yet.{" "}
+                <Link
+                  to="/invoices/new"
+                  className="text-blue-600 dark:text-blue-400 hover:underline"
+                >
                   Create your first one
                 </Link>
                 .
               </p>
             ) : (
-              <table className="w-full text-left">
-                <thead className="bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-sm">
-                  <tr>
-                    <th className="px-4 py-3">Invoice #</th>
-                    <th className="px-4 py-3">Client</th>
-                    <th className="px-4 py-3">Status</th>
-                    <th className="px-4 py-3 text-right">Total</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {recentInvoices.map((inv) => (
-                    <tr key={inv.id} className="border-t border-gray-100 dark:border-gray-700">
-                      <td className="px-4 py-3 font-medium text-gray-900 dark:text-white">{inv.invoiceNumber}</td>
-                      <td className="px-4 py-3 text-gray-600 dark:text-gray-300">{inv.clientName}</td>
-                      <td className="px-4 py-3">
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusColors[inv.status]}`}>
-                          {inv.status}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-right text-gray-900 dark:text-white">
-                        ${Number(inv.total).toFixed(2)}
-                      </td>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left min-w-[500px]">
+                  <thead className="bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-sm">
+                    <tr>
+                      <th className="px-4 py-3">Invoice #</th>
+                      <th className="px-4 py-3">Client</th>
+                      <th className="px-4 py-3">Status</th>
+                      <th className="px-4 py-3 text-right">Total</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {recentInvoices.map((inv) => (
+                      <tr
+                        key={inv.id}
+                        className="border-t border-gray-100 dark:border-gray-700"
+                      >
+                        <td className="px-4 py-3 font-medium text-gray-900 dark:text-white whitespace-nowrap">
+                          {inv.invoiceNumber}
+                        </td>
+                        <td className="px-4 py-3 text-gray-600 dark:text-gray-300 max-w-[180px] break-words">
+                          {inv.clientName}
+                        </td>
+                        <td className="px-4 py-3">
+                          <span
+                            className={`px-2 py-1 rounded-full text-xs font-medium ${statusColors[inv.status]}`}
+                          >
+                            {inv.status}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-right text-gray-900 dark:text-white whitespace-nowrap">
+                          ${Number(inv.total).toFixed(2)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             )}
           </div>
           {invoices.length > 5 && (
             <div className="text-right mt-3">
-              <Link to="/invoices" className="text-sm text-blue-600 dark:text-blue-400 hover:underline">
+              <Link
+                to="/invoices"
+                className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+              >
                 View all {invoices.length} invoices →
               </Link>
             </div>
