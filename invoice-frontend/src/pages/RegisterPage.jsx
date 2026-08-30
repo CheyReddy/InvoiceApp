@@ -30,7 +30,7 @@ const COUNTRIES = [
   'United Arab Emirates',
 ];
 
-const APP_NAME = 'InvoiceApp';
+const APP_NAME = 'SoloPilot';
 
 export default function RegisterPage() {
   const [success, setSuccess] = useState(false);

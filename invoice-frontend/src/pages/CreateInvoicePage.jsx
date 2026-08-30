@@ -104,9 +104,9 @@ export default function CreateInvoicePage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-8 transition-colors">
       <div className="max-w-3xl mx-auto">
-        <Link to="/invoices" className="text-sm text-blue-600 dark:text-blue-400 hover:underline">
-          ← Back to Invoices
-        </Link>
+        <button onClick={() => navigate(-1)} className="text-sm text-blue-600 dark:text-blue-400 hover:underline">
+          ← Back to Dashboard
+        </button>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white mt-2 mb-6">Create Invoice</h1>
 
         <form onSubmit={handleSubmit(onValid)} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 space-y-6">

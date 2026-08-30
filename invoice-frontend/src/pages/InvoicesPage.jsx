@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { getInvoices, deleteInvoice, sendInvoice } from "../api/invoiceApi.js";
 import ThemeToggle from "../components/ThemeToggle.jsx";
 import PdfPreviewModal from "../components/PdfPreviewModal.jsx";
@@ -12,6 +12,7 @@ const statusColors = {
 };
 
 export default function InvoicesPage() {
+  const navigate = useNavigate();
   const [invoices, setInvoices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [actionError, setActionError] = useState("");
@@ -64,13 +65,13 @@ export default function InvoicesPage() {
       <div className="max-w-5xl mx-auto">
         <div className="flex justify-between items-center mb-6">
           <div>
-            <Link
-              to="/dashboard"
+            <button
+              onClick={() => navigate(-1)}
               className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
             >
               <span className="sm:hidden">← Back</span>
               <span className="hidden sm:inline">← Back to Dashboard</span>
-            </Link>
+            </button>
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white mt-2">
               Invoices
             </h1>

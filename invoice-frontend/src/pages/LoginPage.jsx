@@ -9,7 +9,7 @@ const loginSchema = z.object({
   password: z.string().min(1, 'Password is required'),
 });
 
-const APP_NAME = 'InvoiceApp';
+const APP_NAME = 'SoloPilot';
 
 export default function LoginPage() {
   const { login } = useAuth();

@@ -36,12 +36,14 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-8 transition-colors">
-      <div className="max-w-5xl mx-auto p-4 sm:p-8">
+      <div className="max-w-6xl mx-auto p-4 sm:p-8">
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-              InvoiceApp Dashboard
-            </h1>
+            <Link to="/hub">
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                InvoiceApp Dashboard
+              </h1>
+            </Link>
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
               Logged in as {email}
             </p>
@@ -71,7 +73,9 @@ export default function DashboardPage() {
             </p>
             <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
               Sent + Overdue invoices
-              {stats?.currencyCode ? ` · converted to ${stats.currencyCode}` : ""}
+              {stats?.currencyCode
+                ? ` · converted to ${stats.currencyCode}`
+                : ""}
             </p>
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
@@ -85,7 +89,9 @@ export default function DashboardPage() {
             </p>
             <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
               Total collected
-              {stats?.currencyCode ? ` · converted to ${stats.currencyCode}` : ""}
+              {stats?.currencyCode
+                ? ` · converted to ${stats.currencyCode}`
+                : ""}
             </p>
           </div>
         </div>
