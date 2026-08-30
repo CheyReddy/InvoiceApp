@@ -40,7 +40,7 @@ export default function DashboardPage() {
         <div className="flex justify-between items-center mb-8">
           <div>
             <Link to="/hub">
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+              <h1 className="text-lg sm:text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white truncate">
                 InvoiceApp Dashboard
               </h1>
             </Link>
@@ -50,14 +50,14 @@ export default function DashboardPage() {
           </div>
           <div className="flex items-center gap-3">
             <ThemeToggle />
-            <button
+            {/* <button
               onClick={logout}
               className="flex items-center gap-1.5 text-sm text-red-600 dark:text-red-400 font-medium hover:underline"
               aria-label="Log Out"
             >
               <LogOut size={25} />
               <span className="hidden sm:inline">Log Out</span>
-            </button>
+            </button> */}
           </div>
         </div>
 

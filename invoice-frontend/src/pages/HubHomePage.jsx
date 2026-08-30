@@ -34,7 +34,7 @@ function HubHomePage() {
               className="flex items-center gap-1.5 text-sm sm:text-base text-red-600 dark:text-red-400 font-medium hover:underline"
               aria-label="Log Out"
             >
-              <LogOut size={20} className="sm:w-6 sm:h-6" />
+              <LogOut size={25} className="sm:w-6 sm:h-6" />
               <span className="hidden sm:inline">Log Out</span>
             </button>
           </div>

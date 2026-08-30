@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import axiosInstance from '../api/axiosInstance';
+import { useNavigate } from 'react-router-dom';
 
 const AuthContext = createContext(null);
 
@@ -8,6 +9,7 @@ export function AuthProvider({children}) {
   const [token, setToken] = useState(localStorage.getItem('token'));
   const [email, setEmail] = useState(localStorage.getItem('email'));
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
 
   useEffect(() => {
@@ -36,6 +38,7 @@ export function AuthProvider({children}) {
     localStorage.removeItem('email');
     setToken(null);
     setEmail(null);
+    navigate("/login")
   }
 
   const isAuthenticated = !!token;

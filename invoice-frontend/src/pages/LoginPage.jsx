@@ -28,7 +28,7 @@ export default function LoginPage() {
   const onValid = async (data) => {
     try {
       await login(data);
-      navigate('/dashboard');
+      navigate('/hub');
     } catch (err) {
       if (err.response?.status === 401 || err.response?.status === 400) {
         setError('root', { message: 'Invalid email or password' });
