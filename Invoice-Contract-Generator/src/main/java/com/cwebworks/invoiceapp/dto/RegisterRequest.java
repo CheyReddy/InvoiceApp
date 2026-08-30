@@ -14,4 +14,6 @@ public class RegisterRequest {
     @Size(min = 8, max = 16, message = "Password must be between 8 and 16 characters")
     private String password;
 
+    @NotBlank(message = "Country is required")
+    private String country;
 }

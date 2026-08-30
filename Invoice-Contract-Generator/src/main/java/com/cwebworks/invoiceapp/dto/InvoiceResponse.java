@@ -22,6 +22,10 @@ public class InvoiceResponse {
 
     private BigDecimal total;
 
+    private String currencyCode;
+
+    private String currencySymbol;
+
     private String clientName;
 
     private List<InvoiceItemResponse> items;

@@ -19,6 +19,9 @@ public class User {
     @Column(nullable = false)
     private String passwordHash;
 
+    @Column
+    private String country;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Plan plan; // "FREE", "PRO" — nullable for now

@@ -2,19 +2,14 @@ package com.cwebworks.invoiceapp.service;
 
 import com.cwebworks.invoiceapp.entity.Invoice;
 import com.cwebworks.invoiceapp.entity.InvoiceItem;
-import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Element;
+import com.lowagie.text.*;
 import com.lowagie.text.Font;
-import com.lowagie.text.PageSize;
-import com.lowagie.text.Paragraph;
-import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 import org.springframework.stereotype.Component;
 
-import java.awt.Color;
+import java.awt.*;
 import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -26,6 +21,7 @@ public class InvoicePdfGenerator {
     public byte[] generate(Invoice invoice) {
         Document document = new Document(PageSize.A4, 50, 50, 50, 50);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
+        String currencyCode = invoice.getCurrencyCode();
 
         try {
             PdfWriter.getInstance(document, out);
@@ -63,9 +59,9 @@ public class InvoicePdfGenerator {
             for (InvoiceItem item : invoice.getItems()) {
                 table.addCell(new Phrase(item.getDescription(), normalFont));
                 table.addCell(new Phrase(String.valueOf(item.getQuantity()), normalFont));
-                table.addCell(new Phrase(formatCurrency(item.getUnitPrice()), normalFont));
+                table.addCell(new Phrase(formatCurrency(item.getUnitPrice(), currencyCode), normalFont));
                 BigDecimal lineTotal = item.getUnitPrice().multiply(BigDecimal.valueOf(item.getQuantity()));
-                table.addCell(new Phrase(formatCurrency(lineTotal), normalFont));
+                table.addCell(new Phrase(formatCurrency(lineTotal, currencyCode), normalFont));
             }
             document.add(table);
 
@@ -76,7 +72,7 @@ public class InvoicePdfGenerator {
             tax.setAlignment(Element.ALIGN_RIGHT);
             document.add(tax);
 
-            Paragraph total = new Paragraph("Total: " + formatCurrency(invoice.getTotal()),
+            Paragraph total = new Paragraph("Total: " + formatCurrency(invoice.getTotal(), currencyCode),
                     new Font(Font.HELVETICA, 12, Font.BOLD));
             total.setAlignment(Element.ALIGN_RIGHT);
             document.add(total);
@@ -99,7 +95,7 @@ public class InvoicePdfGenerator {
                 });
     }
 
-    private String formatCurrency(BigDecimal amount) {
-        return "$" + amount.setScale(2, RoundingMode.HALF_UP);
+    private String formatCurrency(BigDecimal amount, String currencyCode) {
+        return currencyCode + " " + amount.setScale(2, RoundingMode.HALF_UP);
     }
 }

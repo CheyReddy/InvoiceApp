@@ -6,11 +6,9 @@ import com.cwebworks.invoiceapp.entity.Client;
 import com.cwebworks.invoiceapp.entity.User;
 import com.cwebworks.invoiceapp.repository.ClientRepository;
 import com.cwebworks.invoiceapp.repository.UserRepository;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -31,6 +29,7 @@ public class ClientService {
         client.setEmail(request.getEmail());
         client.setName(request.getName());
         client.setAddress(request.getAddress());
+        client.setCountry(request.getCountry());
 
         Client savedClient = clientRepository.save(client);
         return convertToResponse(savedClient);
@@ -55,6 +54,7 @@ public class ClientService {
         client.setName(request.getName());
         client.setEmail(request.getEmail());
         client.setAddress(request.getAddress());
+        client.setCountry(request.getCountry());
         Client updated = clientRepository.save(client);
         return convertToResponse(updated);
     }
@@ -71,6 +71,7 @@ public class ClientService {
         response.setName(client.getName());
         response.setEmail(client.getEmail());
         response.setAddress(client.getAddress());
+        response.setCountry(client.getCountry());
         return response;
     }
 

@@ -107,6 +107,7 @@ export default function ClientsPage() {
                   <tr>
                     <th className="px-4 py-3">Name</th>
                     <th className="px-4 py-3">Email</th>
+                    <th className="px-4 py-3">Country</th>
                     <th className="px-4 py-3">Address</th>
                     <th className="px-4 py-3 text-right">Actions</th>
                   </tr>
@@ -122,6 +123,9 @@ export default function ClientsPage() {
                       </td>
                       <td className="px-4 py-3 text-gray-600 dark:text-gray-300 max-w-[200px] break-words">
                         {client.email || "—"}
+                      </td>
+                      <td className="px-4 py-3 text-gray-600 dark:text-gray-300 whitespace-nowrap">
+                        {client.country || "—"}
                       </td>
                       <td className="px-4 py-3 text-gray-600 dark:text-gray-300 max-w-[220px] break-words">
                         {client.address || "—"}

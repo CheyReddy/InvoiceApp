@@ -7,7 +7,24 @@ const clientSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   email: z.string().email('Invalid email address').optional().or(z.literal('')),
   address: z.string().optional(),
+  country: z.string().min(1, 'Country is required'),
 });
+
+const COUNTRIES = [
+  'United States',
+  'India',
+  'United Kingdom',
+  'Canada',
+  'Australia',
+  'Germany',
+  'France',
+  'Spain',
+  'Italy',
+  'Netherlands',
+  'Japan',
+  'Singapore',
+  'United Arab Emirates',
+];
 
 export default function ClientFormModal({ isOpen, onClose, onSubmit, initialData }) {
   const {
@@ -18,15 +35,20 @@ export default function ClientFormModal({ isOpen, onClose, onSubmit, initialData
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(clientSchema),
-    defaultValues: { name: '', email: '', address: '' },
+    defaultValues: { name: '', email: '', address: '', country: '' },
   });
 
   useEffect(() => {
     if (isOpen) {
       reset(
         initialData
-          ? { name: initialData.name, email: initialData.email || '', address: initialData.address || '' }
-          : { name: '', email: '', address: '' }
+          ? {
+              name: initialData.name,
+              email: initialData.email || '',
+              address: initialData.address || '',
+              country: initialData.country || '',
+            }
+          : { name: '', email: '', address: '', country: '' }
       );
     }
   }, [initialData, isOpen, reset]);
@@ -68,6 +90,20 @@ export default function ClientFormModal({ isOpen, onClose, onSubmit, initialData
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             {errors.email && <p className="text-sm text-red-600 dark:text-red-400 mt-1">{errors.email.message}</p>}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Country</label>
+            <select
+              {...register('country')}
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">Select a country</option>
+              {COUNTRIES.map((c) => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+            </select>
+            {errors.country && <p className="text-sm text-red-600 dark:text-red-400 mt-1">{errors.country.message}</p>}
           </div>
 
           <div>

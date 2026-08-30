@@ -11,7 +11,24 @@ const registerSchema = z.object({
     .string()
     .min(8, 'Password must be at least 8 characters')
     .max(16, 'Password must be at most 16 characters'),
+  country: z.string().min(1, 'Country is required'),
 });
+
+const COUNTRIES = [
+  'United States',
+  'India',
+  'United Kingdom',
+  'Canada',
+  'Australia',
+  'Germany',
+  'France',
+  'Spain',
+  'Italy',
+  'Netherlands',
+  'Japan',
+  'Singapore',
+  'United Arab Emirates',
+];
 
 const APP_NAME = 'InvoiceApp';
 
@@ -27,7 +44,7 @@ export default function RegisterPage() {
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(registerSchema),
-    defaultValues: { email: '', password: '' },
+    defaultValues: { email: '', password: '', country: '' },
   });
 
   const onValid = async (data) => {
@@ -76,6 +93,23 @@ export default function RegisterPage() {
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
               {errors.password && <p className="text-sm text-red-600 dark:text-red-400 mt-1">{errors.password.message}</p>}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Country</label>
+              <select
+                {...register('country')}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">Select your country</option>
+                {COUNTRIES.map((c) => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
+              {errors.country && <p className="text-sm text-red-600 dark:text-red-400 mt-1">{errors.country.message}</p>}
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                Used to determine your dashboard's default currency.
+              </p>
             </div>
 
             {errors.root && <p className="text-sm text-red-600 dark:text-red-400">{errors.root.message}</p>}

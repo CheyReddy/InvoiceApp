@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 import { getInvoices } from "../api/invoiceApi.js";
+import { getDashboardStats } from "../api/dashboardApi.js";
 import ThemeToggle from "../components/ThemeToggle.jsx";
 import { LogOut } from "lucide-react";
 
@@ -15,21 +16,19 @@ const statusColors = {
 export default function DashboardPage() {
   const { email, logout } = useAuth();
   const [invoices, setInvoices] = useState([]);
+  const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [statsLoading, setStatsLoading] = useState(true);
 
   useEffect(() => {
     getInvoices()
       .then((res) => setInvoices(res.data))
       .finally(() => setLoading(false));
+
+    getDashboardStats()
+      .then((res) => setStats(res.data))
+      .finally(() => setStatsLoading(false));
   }, []);
-
-  const outstanding = invoices
-    .filter((inv) => inv.status === "SENT" || inv.status === "OVERDUE")
-    .reduce((sum, inv) => sum + Number(inv.total), 0);
-
-  const paid = invoices
-    .filter((inv) => inv.status === "PAID")
-    .reduce((sum, inv) => sum + Number(inv.total), 0);
 
   const recentInvoices = [...invoices]
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
@@ -66,10 +65,13 @@ export default function DashboardPage() {
               Outstanding
             </p>
             <p className="text-3xl font-bold text-orange-600 dark:text-orange-400">
-              {loading ? "—" : `$${outstanding.toFixed(2)}`}
+              {statsLoading
+                ? "—"
+                : `${stats?.currencySymbol ?? "$"}${Number(stats?.outstanding ?? 0).toFixed(2)}`}
             </p>
             <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
               Sent + Overdue invoices
+              {stats?.currencyCode ? ` · converted to ${stats.currencyCode}` : ""}
             </p>
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
@@ -77,10 +79,13 @@ export default function DashboardPage() {
               Paid
             </p>
             <p className="text-3xl font-bold text-green-600 dark:text-green-400">
-              {loading ? "—" : `$${paid.toFixed(2)}`}
+              {statsLoading
+                ? "—"
+                : `${stats?.currencySymbol ?? "$"}${Number(stats?.paid ?? 0).toFixed(2)}`}
             </p>
             <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
               Total collected
+              {stats?.currencyCode ? ` · converted to ${stats.currencyCode}` : ""}
             </p>
           </div>
         </div>
@@ -88,23 +93,24 @@ export default function DashboardPage() {
         <div className="flex gap-2 sm:gap-3 mb-8">
           <Link
             to="/invoices/new"
-            className="flex-1 bg-blue-600 text-white px-2 sm:px-4 py-2 rounded-lg font-medium hover:bg-blue-700 text-sm sm:text-base"
+            className="flex-1 bg-blue-600 text-white px-2 sm:px-4 py-2 rounded-lg font-medium hover:bg-blue-700 text-sm sm:text-base text-center"
           >
             + New Invoice
           </Link>
           <Link
             to="/clients"
-            className="flex-1 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 px-2 sm:px-4 py-2 rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-gray-700 text-sm sm:text-base"
+            className="flex-1 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 px-2 sm:px-4 py-2 rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-gray-700 text-sm sm:text-base text-center"
           >
             Manage Clients
           </Link>
           <Link
             to="/invoices"
-            className="flex-1 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 px-2 sm:px-4 py-2 rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-gray-700 text-sm sm:text-base"
+            className="flex-1 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 px-2 sm:px-4 py-2 rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-gray-700 text-sm sm:text-base text-center"
           >
             All Invoices
           </Link>
         </div>
+
         <div>
           <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-3">
             Recent Invoices
@@ -156,7 +162,8 @@ export default function DashboardPage() {
                           </span>
                         </td>
                         <td className="px-4 py-3 text-right text-gray-900 dark:text-white whitespace-nowrap">
-                          ${Number(inv.total).toFixed(2)}
+                          {inv.currencySymbol}
+                          {Number(inv.total).toFixed(2)}
                         </td>
                       </tr>
                     ))}

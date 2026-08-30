@@ -11,7 +11,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "invoices")
+@Table(
+        name = "invoices",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "invoice_number"})
+)
 @Data
 public class Invoice {
 
@@ -27,7 +30,7 @@ public class Invoice {
     @JoinColumn(name = "client_id", nullable = false)
     private Client client;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String invoiceNumber;
 
     @Enumerated(EnumType.STRING)
@@ -41,6 +44,9 @@ public class Invoice {
 
     @Column(nullable = false)
     private BigDecimal total;
+
+    @Column(nullable = true)
+    private String currencyCode;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;

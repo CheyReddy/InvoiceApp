@@ -21,6 +21,22 @@ const invoiceSchema = z.object({
     .min(1, 'Add at least one line item'),
 });
 
+const COUNTRY_CURRENCY_SYMBOL = {
+  'United States': '$',
+  'India': '₹',
+  'United Kingdom': '£',
+  'Canada': 'CA$',
+  'Australia': 'A$',
+  'Germany': '€',
+  'France': '€',
+  'Spain': '€',
+  'Italy': '€',
+  'Netherlands': '€',
+  'Japan': '¥',
+  'Singapore': 'S$',
+  'United Arab Emirates': 'AED ',
+};
+
 export default function CreateInvoicePage() {
   const [clients, setClients] = useState([]);
   const [loadingClients, setLoadingClients] = useState(true);
@@ -46,6 +62,10 @@ export default function CreateInvoicePage() {
   const { fields, append, remove } = useFieldArray({ control, name: 'items' });
   const watchedItems = watch('items');
   const watchedTax = watch('taxPercent');
+  const watchedClientId = watch('clientId');
+
+  const selectedClient = clients.find((c) => String(c.id) === String(watchedClientId));
+  const currencySymbol = COUNTRY_CURRENCY_SYMBOL[selectedClient?.country] || '$';
 
   useEffect(() => {
     getClients()
@@ -114,6 +134,11 @@ export default function CreateInvoicePage() {
                   <Link to="/clients" className="text-blue-600 dark:text-blue-400 hover:underline">
                     Add one first
                   </Link>
+                </p>
+              )}
+              {selectedClient && (
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  Currency: {selectedClient.country || 'Not set'} ({currencySymbol})
                 </p>
               )}
             </div>
@@ -209,9 +234,9 @@ export default function CreateInvoicePage() {
             </div>
 
             <div className="text-right space-y-1">
-              <p className="text-sm text-gray-600 dark:text-gray-300">Subtotal: ${subtotal.toFixed(2)}</p>
-              <p className="text-sm text-gray-600 dark:text-gray-300">Tax: ${taxAmount.toFixed(2)}</p>
-              <p className="text-lg font-bold text-gray-900 dark:text-white">Total: ${total.toFixed(2)}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Subtotal: {currencySymbol}{subtotal.toFixed(2)}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Tax: {currencySymbol}{taxAmount.toFixed(2)}</p>
+              <p className="text-lg font-bold text-gray-900 dark:text-white">Total: {currencySymbol}{total.toFixed(2)}</p>
             </div>
           </div>
 

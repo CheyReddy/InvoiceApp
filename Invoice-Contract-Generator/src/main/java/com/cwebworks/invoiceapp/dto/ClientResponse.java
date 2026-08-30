@@ -8,4 +8,5 @@ public class ClientResponse {
     private String name;
     private String email;
     private String address;
+    private String country;
 }

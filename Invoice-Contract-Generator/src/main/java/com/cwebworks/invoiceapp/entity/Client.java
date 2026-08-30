@@ -23,4 +23,7 @@ public class Client {
 
     private String address;
 
+    @Column
+    private String country;
+
 }

@@ -36,6 +36,7 @@ public class AuthService {
         user.setEmail(request.getEmail());
         user.setPlan(Plan.FREE);
         user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
+        user.setCountry(request.getCountry());
 
         User savedUser = userRepository.save(user);
 
@@ -43,6 +44,7 @@ public class AuthService {
         response.setId(savedUser.getId());
         response.setEmail(savedUser.getEmail());
         response.setPlan(savedUser.getPlan());
+        response.setCountry(savedUser.getCountry());
 
         return response;
     }

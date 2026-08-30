@@ -15,7 +15,16 @@ export default function PdfPreviewModal({
   const [pdfUrl, setPdfUrl] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const isMobile = isMobileDevice();
+  const [isMobile] = useState(() => isMobileDevice());
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKey = (e) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [isOpen, onClose]);
 
   useEffect(() => {
     if (!isOpen || !invoiceId) return;

@@ -11,6 +11,7 @@ import com.cwebworks.invoiceapp.entity.User;
 import com.cwebworks.invoiceapp.repository.ClientRepository;
 import com.cwebworks.invoiceapp.repository.InvoiceRepository;
 import com.cwebworks.invoiceapp.repository.UserRepository;
+import com.cwebworks.invoiceapp.util.CurrencyUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,6 +44,7 @@ public class InvoiceService {
         invoice.setStatus(InvoiceStatus.DRAFT);
         invoice.setDueDate(request.getDueDate());
         invoice.setTaxPercent(request.getTaxPercent());
+        invoice.setCurrencyCode(CurrencyUtil.currencyCodeForCountry(client.getCountry()));
 
         List<InvoiceItem> items = request.getItems().stream()
                 .map(itemReq -> {
@@ -114,6 +116,8 @@ public class InvoiceService {
         response.setTaxPercent(invoice.getTaxPercent());
         response.setClientName(invoice.getClient().getName());
         response.setCreatedAt(invoice.getCreatedAt());
+        response.setCurrencyCode(invoice.getCurrencyCode());
+        response.setCurrencySymbol(CurrencyUtil.symbolForCurrency(invoice.getCurrencyCode()));
 
         List<InvoiceItemResponse> itemResponses = invoice.getItems().stream()
                 .map(item -> {

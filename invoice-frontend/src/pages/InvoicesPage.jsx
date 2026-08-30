@@ -137,7 +137,8 @@ export default function InvoicesPage() {
                         </span>
                       </td>
                       <td className="px-4 py-3 text-right text-gray-900 dark:text-white whitespace-nowrap">
-                        ${Number(inv.total).toFixed(2)}
+                        {inv.currencySymbol}
+                        {Number(inv.total).toFixed(2)}
                       </td>
                       <td className="px-4 py-3 text-right space-x-3 whitespace-nowrap">
                         <button
