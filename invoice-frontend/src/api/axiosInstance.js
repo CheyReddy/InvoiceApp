@@ -12,4 +12,17 @@ axiosInstance.interceptors.request.use((config) => {
   return config;
 });
 
+
+axiosInstance.interceptors.response.use((response) => response,
+  (error) => {
+    if (error.response?.status === 401 || error.response?.status === 403) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('email');
+      localStorage.setItem('toastMessage', 'Your session has expired. Please log in again.');
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  });
+
+
 export default axiosInstance;
