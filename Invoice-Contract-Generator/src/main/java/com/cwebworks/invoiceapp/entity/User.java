@@ -32,12 +32,12 @@ public class User {
     @Column(columnDefinition = "COMMENT 'Appending to outgoing invoice emails sent to your clients.'")
     private String signature;
 
-    @Column(columnDefinition = "COMMENT 'Email me when an invoice is viewed by a client'")
+    @Column
     private Boolean invoiceViewed = false;
 
-    @Column(columnDefinition = "COMMENT 'Send me overdue invoice reminders.'")
+    @Column
     private Boolean overdueReminders = false;
 
-    @Column(columnDefinition = "COMMENT 'Email me when an invoice is paid'")
+    @Column
     private Boolean paymentReceived = false;
 }

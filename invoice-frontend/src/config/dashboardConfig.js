@@ -27,7 +27,7 @@ export const dashboardConfig = [
     appName: "Profile & Settings Dashboard",
     toUrl: "/profile",
     icon: UserCog,
-    appStatus: "IN_PROGRESS",
+    appStatus: "COMPLETED",
   },
   {
     appName: "Invoices & Payments Dashboard",
