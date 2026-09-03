@@ -106,7 +106,7 @@ export default function InvoicesPage() {
     <div className="flex-1 min-h-0 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent pr-2">
 
       {loading ? (
-        <LoadingSpinner size="sm" text="Loading Invoices..." />
+        <LoadingSpinner size="sm" text="Loading Invoices..." fullScreen/>
       ) : invoices.length === 0 ? (
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-8 text-center text-gray-500 dark:text-gray-400">
           No invoices yet. Create your first one to get started.

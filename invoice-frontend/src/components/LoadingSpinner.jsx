@@ -10,6 +10,12 @@ function LoadingSpinner({
     lg: "h-10 w-10 border-4",
   };
 
+  const spinnerColor = light
+    ? "border-white/40 border-t-white"
+    : "border-gray-300 border-t-gray-800 dark:border-gray-700 dark:border-t-white";
+
+  const textColor = light ? "text-white" : "text-gray-700 dark:text-gray-300";
+
   const spinner = (
     <div
       className={`
@@ -17,23 +23,28 @@ function LoadingSpinner({
         animate-spin
         rounded-full
         shrink-0
-        ${
-          light
-            ? "border-white/40 border-t-white"
-            : "border-gray-300 border-t-gray-800 dark:border-gray-700 dark:border-t-white"
-        }
+        ${spinnerColor}
       `}
+      aria-hidden="true"
     />
   );
 
   if (fullScreen) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-black dark:text-white transition-colors flex items-center justify-center px-4">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors flex items-center justify-center px-4">
         <div className="flex flex-col items-center justify-center gap-3">
           {spinner}
 
           {text && (
-            <p className="text-center text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-300">
+            <p
+              className={`
+                text-center
+                text-xs
+                sm:text-sm
+                font-medium
+                ${textColor}
+              `}
+            >
               {text}
             </p>
           )}
@@ -42,12 +53,23 @@ function LoadingSpinner({
     );
   }
 
+  /*
+   * Normal / button loading
+   */
   return (
     <div className="flex items-center justify-center">
       {spinner}
 
       {text && (
-        <span className="ml-2 text-xs sm:text-sm">
+        <span
+          className={`
+            ml-2
+            text-xs
+            sm:text-sm
+            font-medium
+            ${textColor}
+          `}
+        >
           {text}
         </span>
       )}

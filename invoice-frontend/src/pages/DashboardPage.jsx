@@ -121,7 +121,7 @@ export default function DashboardPage() {
             </h2>
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
               {loading ? (
-                <LoadingSpinner size="sm" text="Loading..." />
+                <LoadingSpinner size="sm" text="Loading..." fullScreen />
               ) : recentInvoices.length === 0 ? (
                 <p className="p-6 text-gray-500 dark:text-gray-400 text-sm">
                   No invoices yet.{" "}

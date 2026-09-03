@@ -103,7 +103,7 @@ export default function ClientsPage() {
     <div className="flex-1 min-h-0 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent pr-2">
 
       {loading ? (
-        <LoadingSpinner size="sm" text="Loading Clients..." />
+        <LoadingSpinner size="sm" text="Loading Clients..." fullScreen/>
       ) : error ? (
         <p className="text-red-600 dark:text-red-400">
           {error}
