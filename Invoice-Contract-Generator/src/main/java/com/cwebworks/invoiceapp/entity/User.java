@@ -26,4 +26,18 @@ public class User {
     @Column(nullable = false)
     private Plan plan; // "FREE", "PRO" — nullable for now
 
+    @Column
+    private String businessName;
+
+    @Column(columnDefinition = "COMMENT 'Appending to outgoing invoice emails sent to your clients.'")
+    private String signature;
+
+    @Column(columnDefinition = "COMMENT 'Email me when an invoice is viewed by a client'")
+    private Boolean invoiceViewed = false;
+
+    @Column(columnDefinition = "COMMENT 'Send me overdue invoice reminders.'")
+    private Boolean overdueReminders = false;
+
+    @Column(columnDefinition = "COMMENT 'Email me when an invoice is paid'")
+    private Boolean paymentReceived = false;
 }

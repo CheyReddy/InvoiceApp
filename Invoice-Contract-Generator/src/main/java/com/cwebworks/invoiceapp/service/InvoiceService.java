@@ -87,6 +87,7 @@ public class InvoiceService {
         return subTotal.add(taxAmount).setScale(2, RoundingMode.HALF_UP);
     }
 
+    @Transactional(readOnly = true)
     public List<InvoiceResponse> getAllInvoices(String userEmail){
         return invoiceRepository.findAllByUserEmail(userEmail)
                 .stream()

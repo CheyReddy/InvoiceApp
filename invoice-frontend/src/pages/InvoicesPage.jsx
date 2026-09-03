@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { getInvoices, deleteInvoice, sendInvoice } from "../api/invoiceApi.js";
 import ThemeToggle from "../components/ThemeToggle.jsx";
 import PdfPreviewModal from "../components/PdfPreviewModal.jsx";
+import LoadingSpinner from "../components/LoadingSpinner.jsx";
 
 const statusColors = {
   DRAFT: "bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-200",
@@ -61,124 +62,146 @@ export default function InvoicesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 sm:p-8 transition-colors">
-      <div className="max-w-5xl mx-auto">
-        <div className="flex justify-between items-center mb-6">
-          <div>
-            <button
-              onClick={() => navigate(-1)}
-              className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
-            >
-              <span className="sm:hidden">← Back</span>
-              <span className="hidden sm:inline">← Back to Dashboard</span>
-            </button>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white mt-2">
-              Invoices
-            </h1>
-          </div>
-          <div className="flex items-center gap-3">
-            <ThemeToggle />
-            <Link
-              to="/invoices/new"
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 text-center"
-            >
-              + New Invoice
-            </Link>
-          </div>
+    <div className="h-screen bg-gray-50 dark:bg-gray-900 transition-colors overflow-hidden">
+  <div className="max-w-5xl mx-auto h-full p-4 sm:p-8 flex flex-col">
+
+    {/* Header */}
+    <div className="shrink-0">
+      <div className="flex justify-between items-center mb-6">
+        <div>
+          <button
+            onClick={() => navigate(-1)}
+            className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+          >
+            <span className="sm:hidden">← Back</span>
+            <span className="hidden sm:inline">← Back to Dashboard</span>
+          </button>
+
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mt-2">
+            Invoices
+          </h1>
         </div>
 
-        {actionError && (
-          <p className="text-sm text-red-600 dark:text-red-400 mb-4">
-            {actionError}
-          </p>
-        )}
+        <div className="flex items-center gap-3">
+          <ThemeToggle />
 
-        {loading ? (
-          <p className="text-gray-500 dark:text-gray-400">
-            Loading invoices...
-          </p>
-        ) : invoices.length === 0 ? (
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-8 text-center text-gray-500 dark:text-gray-400">
-            No invoices yet. Create your first one to get started.
-          </div>
-        ) : (
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left min-w-[640px]">
-                <thead className="bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-sm">
-                  <tr>
-                    <th className="px-4 py-3">Invoice #</th>
-                    <th className="px-4 py-3">Client</th>
-                    <th className="px-4 py-3">Due Date</th>
-                    <th className="px-4 py-3">Status</th>
-                    <th className="px-4 py-3 text-right">Total</th>
-                    <th className="px-4 py-3 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {invoices.map((inv) => (
-                    <tr
-                      key={inv.id}
-                      className="border-t border-gray-100 dark:border-gray-700"
-                    >
-                      <td className="px-4 py-3 font-medium text-gray-900 dark:text-white whitespace-nowrap">
-                        {inv.invoiceNumber}
-                      </td>
-                      <td className="px-4 py-3 text-gray-600 dark:text-gray-300 max-w-[180px] break-words">
-                        {inv.clientName}
-                      </td>
-                      <td className="px-4 py-3 text-gray-600 dark:text-gray-300 whitespace-nowrap">
-                        {inv.dueDate}
-                      </td>
-                      <td className="px-4 py-3">
-                        <span
-                          className={`px-2 py-1 rounded-full text-xs font-medium ${statusColors[inv.status]}`}
-                        >
-                          {inv.status}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-right text-gray-900 dark:text-white whitespace-nowrap">
-                        {inv.currencySymbol}
-                        {Number(inv.total).toFixed(2)}
-                      </td>
-                      <td className="px-4 py-3 text-right space-x-3 whitespace-nowrap">
-                        <button
-                          onClick={() => setPreviewInvoice(inv)}
-                          className="text-blue-600 dark:text-blue-400 hover:underline text-sm font-medium"
-                        >
-                          PDF
-                        </button>
-                        {inv.status === "DRAFT" && (
-                          <button
-                            onClick={() => handleSend(inv.id)}
-                            disabled={sendingId === inv.id}
-                            className="text-green-600 dark:text-green-400 hover:underline text-sm font-medium disabled:opacity-50"
-                          >
-                            {sendingId === inv.id ? "Sending..." : "Send"}
-                          </button>
-                        )}
-                        <button
-                          onClick={() => handleDelete(inv.id)}
-                          className="text-red-600 dark:text-red-400 hover:underline text-sm font-medium"
-                        >
-                          Delete
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
+          <Link
+            to="/invoices/new"
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 text-center"
+          >
+            + New Invoice
+          </Link>
+        </div>
       </div>
 
-      <PdfPreviewModal
-        isOpen={!!previewInvoice}
-        onClose={() => setPreviewInvoice(null)}
-        invoiceId={previewInvoice?.id}
-        invoiceNumber={previewInvoice?.invoiceNumber}
-      />
+      {/* Error */}
+      {actionError && (
+        <p className="text-sm text-red-600 dark:text-red-400 mb-4">
+          {actionError}
+        </p>
+      )}
     </div>
+
+    {/* Scrollable content */}
+    <div className="flex-1 min-h-0 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent pr-2">
+
+      {loading ? (
+        <LoadingSpinner size="sm" text="Loading Invoices..." />
+      ) : invoices.length === 0 ? (
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-8 text-center text-gray-500 dark:text-gray-400">
+          No invoices yet. Create your first one to get started.
+        </div>
+      ) : (
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
+
+          {/* Horizontal scrolling for table on mobile */}
+          <div className="overflow-x-auto">
+            <table className="w-full text-left min-w-[640px]">
+              <thead className="bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-sm">
+                <tr>
+                  <th className="px-4 py-3">Invoice #</th>
+                  <th className="px-4 py-3">Client</th>
+                  <th className="px-4 py-3">Due Date</th>
+                  <th className="px-4 py-3">Status</th>
+                  <th className="px-4 py-3 text-right">Total</th>
+                  <th className="px-4 py-3 text-right">Actions</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {invoices.map((inv) => (
+                  <tr
+                    key={inv.id}
+                    className="border-t border-gray-100 dark:border-gray-700"
+                  >
+                    <td className="px-4 py-3 font-medium text-gray-900 dark:text-white whitespace-nowrap">
+                      {inv.invoiceNumber}
+                    </td>
+
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-300 max-w-[180px] break-words">
+                      {inv.clientName}
+                    </td>
+
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-300 whitespace-nowrap">
+                      {inv.dueDate}
+                    </td>
+
+                    <td className="px-4 py-3">
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-medium ${statusColors[inv.status]}`}
+                      >
+                        {inv.status}
+                      </span>
+                    </td>
+
+                    <td className="px-4 py-3 text-right text-gray-900 dark:text-white whitespace-nowrap">
+                      {inv.currencySymbol}
+                      {Number(inv.total).toFixed(2)}
+                    </td>
+
+                    <td className="px-4 py-3 text-right space-x-3 whitespace-nowrap">
+                      <button
+                        onClick={() => setPreviewInvoice(inv)}
+                        className="text-blue-600 dark:text-blue-400 hover:underline text-sm font-medium"
+                      >
+                        PDF
+                      </button>
+
+                      {inv.status === "DRAFT" && (
+                        <button
+                          onClick={() => handleSend(inv.id)}
+                          disabled={sendingId === inv.id}
+                          className="text-green-600 dark:text-green-400 hover:underline text-sm font-medium disabled:opacity-50"
+                        >
+                          {sendingId === inv.id ? "Sending..." : "Send"}
+                        </button>
+                      )}
+
+                      <button
+                        onClick={() => handleDelete(inv.id)}
+                        className="text-red-600 dark:text-red-400 hover:underline text-sm font-medium"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+      )}
+
+    </div>
+  </div>
+
+  <PdfPreviewModal
+    isOpen={!!previewInvoice}
+    onClose={() => setPreviewInvoice(null)}
+    invoiceId={previewInvoice?.id}
+    invoiceNumber={previewInvoice?.invoiceNumber}
+  />
+</div>
   );
 }

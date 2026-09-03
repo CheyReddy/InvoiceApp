@@ -9,6 +9,7 @@ import InvoicesPage from "./pages/InvoicesPage.jsx";
 import CreateInvoicePage from "./pages/CreateInvoicePage.jsx";
 import HubHomePage from "./pages/HubHomePage.jsx";
 import { Toaster } from "react-hot-toast";
+import ProfileSettings from "./dashboards/ProfileSettings.jsx";
 
 function App() {
   return (
@@ -16,7 +17,7 @@ function App() {
       <Toaster
         position="top-center"
         toastOptions={{
-          duration: 3000,
+          duration: 2000,
           className:
             "!max-w-[calc(100vw-2rem)] !text-xs sm:!text-sm !px-3 sm:!px-4 !py-2 sm:!py-3 !break-words",
           style: {
@@ -26,7 +27,14 @@ function App() {
         }}
       />
       <Routes>
-        <Route path="/hub" element={<HubHomePage />} />
+        <Route
+          path="/hub"
+          element={
+            <ProtectedRoute>
+              <HubHomePage />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route
@@ -61,8 +69,16 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
-        <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        <Route path="/" element={<Navigate to="/hub" replace />} />
+        <Route path="*" element={<Navigate to="/hub" replace />} />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <ProfileSettings />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </>
   );

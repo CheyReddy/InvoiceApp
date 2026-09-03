@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { getClients } from '../api/clientApi.js';
 import { createInvoice } from '../api/invoiceApi.js';
+import LoadingSpinner from '../components/LoadingSpinner.jsx';
 
 const invoiceSchema = z.object({
   clientId: z.string().min(1, 'Please select a client'),
@@ -119,7 +120,7 @@ export default function CreateInvoicePage() {
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">
-                  {loadingClients ? 'Loading clients...' : 'Select a client'}
+                  {loadingClients ? <LoadingSpinner size="sm" text="Loading..." /> : 'Select a client'}
                 </option>
                 {clients.map((c) => (
                   <option key={c.id} value={c.id}>

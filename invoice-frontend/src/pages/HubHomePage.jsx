@@ -11,7 +11,6 @@ function HubHomePage() {
   return (
     <div className="h-screen bg-gray-50 dark:bg-gray-900 p-4 sm:p-6 lg:p-8 transition-colors overflow-hidden">
       <div className="max-w-6xl mx-auto p-2 sm:p-4 lg:p-8 h-full flex flex-col">
-
         {/* Header */}
         <div className="flex justify-between items-center mb-6 sm:mb-8 shrink-0 gap-4">
           <div className="min-w-0">
@@ -49,10 +48,17 @@ function HubHomePage() {
               const handleClick = (e) => {
                 if (d.appStatus === "COMING_SOON") {
                   e.preventDefault();
-
                   toast(`${d.appName} is coming soon!`, {
                     icon: "🚧",
                   });
+                  return;
+                }
+                if (d.appStatus === "IN_PROGRESS" && !import.meta.env.DEV) {
+                  e.preventDefault();
+                  toast(`${d.appName} is still in progress!`, {
+                    icon: "🚧",
+                  });
+                  return;
                 }
               };
 
@@ -87,17 +93,18 @@ function HubHomePage() {
                 >
                   {d.appStatus === "COMING_SOON" && (
                     <span className="absolute top-2 right-2 flex items-center gap-1 text-[8px] sm:text-[9px] lg:text-[10px] text-amber-200">
-                      <Clock
-                        size={10}
-                        className="sm:w-3 sm:h-3"
-                      />
+                      <Clock size={10} className="sm:w-3 sm:h-3" />
                       COMING SOON
                     </span>
                   )}
+                  {d.appStatus === "IN_PROGRESS" && (
+                    <span className="absolute top-2 right-2 flex items-center gap-1 text-[8px] sm:text-[9px] lg:text-[10px] text-amber-200">
+                      <Clock size={10} className="sm:w-3 sm:h-3" />
+                      IN PROGRESS
+                    </span>
+                  )}
 
-                  <IconComponent
-                    className="w-10 h-10 sm:w-12 sm:h-12 lg:w-16 lg:h-16 mb-3 sm:mb-4 mt-2.5"
-                  />
+                  <IconComponent className="w-10 h-10 sm:w-12 sm:h-12 lg:w-16 lg:h-16 mb-3 sm:mb-4 mt-2.5" />
 
                   <span className="text-xs sm:text-sm lg:text-base leading-tight">
                     {d.appName}
