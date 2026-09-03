@@ -29,7 +29,7 @@ public class User {
     @Column
     private String businessName;
 
-    @Column(columnDefinition = "COMMENT 'Appending to outgoing invoice emails sent to your clients.'")
+    @Column
     private String signature;
 
     @Column
