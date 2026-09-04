@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Download, FileText } from "lucide-react";
 import axiosInstance from "../api/axiosInstance.js";
+import LoadingSpinner from "./LoadingSpinner.jsx";
 
 function isMobileDevice() {
   return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
@@ -96,9 +97,7 @@ export default function PdfPreviewModal({
 
         <div className="flex-1 overflow-hidden">
           {loading ? (
-            <div className="h-full flex items-center justify-center text-gray-500 dark:text-gray-400 text-sm">
-              Loading preview...
-            </div>
+            <LoadingSpinner size="sm" text="Loading Invoices..." fullScreen />
           ) : error ? (
             <div className="h-full flex items-center justify-center text-red-600 dark:text-red-400 text-sm">
               {error}

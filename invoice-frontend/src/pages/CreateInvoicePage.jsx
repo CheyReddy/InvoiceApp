@@ -9,7 +9,13 @@ import LoadingSpinner from '../components/LoadingSpinner.jsx';
 
 const invoiceSchema = z.object({
   clientId: z.string().min(1, 'Please select a client'),
-  dueDate: z.string().min(1, 'Due date is required'),
+  dueDate: z
+    .string()
+    .min(1, "Due date is required")
+    .refine(
+      (date) => date >= new Date().toISOString().split("T")[0],
+      "Due date cannot be in the past"
+    ),
   taxPercent: z.coerce.number().min(0, 'Tax cannot be negative').max(100, 'Tax cannot exceed 100%'),
   items: z
     .array(
@@ -42,6 +48,7 @@ export default function CreateInvoicePage() {
   const [clients, setClients] = useState([]);
   const [loadingClients, setLoadingClients] = useState(true);
   const navigate = useNavigate();
+  const today = new Date().toISOString().split("T")[0];
 
   const {
     register,
@@ -105,9 +112,9 @@ export default function CreateInvoicePage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-8 transition-colors">
       <div className="max-w-3xl mx-auto">
-        <button onClick={() => navigate(-1)} className="text-sm text-blue-600 dark:text-blue-400 hover:underline">
-          ← Back to Dashboard
-        </button>
+        <Link to="/invoices" className="text-sm text-blue-600 dark:text-blue-400 hover:underline">
+          ← Back to Invoices
+        </Link>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white mt-2 mb-6">Create Invoice</h1>
 
         <form onSubmit={handleSubmit(onValid)} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 space-y-6">
@@ -148,6 +155,7 @@ export default function CreateInvoicePage() {
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Due Date</label>
               <input
                 type="date"
+                min={today}
                 {...register('dueDate')}
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
               />

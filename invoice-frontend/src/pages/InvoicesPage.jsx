@@ -1,11 +1,15 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { getInvoices, deleteInvoice, sendInvoice } from "../api/invoiceApi.js";
+import {
+  getInvoices,
+  deleteInvoice,
+  sendInvoice,
+  updateInvoiceStatus,
+} from "../api/invoiceApi.js";
 import ThemeToggle from "../components/ThemeToggle.jsx";
 import PdfPreviewModal from "../components/PdfPreviewModal.jsx";
 import LoadingSpinner from "../components/LoadingSpinner.jsx";
 import toast from "react-hot-toast";
-import { useAuth } from "../context/AuthContext.jsx";
 
 const statusColors = {
   DRAFT: "bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-200",
@@ -14,9 +18,24 @@ const statusColors = {
   OVERDUE: "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-200",
 };
 
+const getAllowedNextStatuses = (status) => {
+  switch (status) {
+    case "DRAFT":
+      return ["SENT"];
+    case "SENT":
+      return ["PAID"];
+    case "OVERDUE":
+      return ["PAID"];
+    case "PAID":
+      return [];
+    default:
+      return [];
+  }
+};
+
 export default function InvoicesPage() {
-  const { logout } = useAuth();
   const navigate = useNavigate();
+
   const [invoices, setInvoices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [actionError, setActionError] = useState("");
@@ -25,10 +44,12 @@ export default function InvoicesPage() {
 
   const loadInvoices = async () => {
     setLoading(true);
+
     try {
       const res = await getInvoices();
       setInvoices(res.data);
     } catch (err) {
+      console.error("Failed to load invoices:", err);
       setActionError("Failed to load invoices");
     } finally {
       setLoading(false);
@@ -41,36 +62,82 @@ export default function InvoicesPage() {
 
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this invoice?")) return;
+
     try {
       await deleteInvoice(id);
+
       setInvoices((prev) => prev.filter((inv) => inv.id !== id));
+
+      toast.success("Invoice deleted successfully!");
     } catch (err) {
-      setActionError("Failed to delete invoice");
+      console.error("Failed to delete invoice:", err);
+      toast.error(err.response?.data?.error || "Failed to delete invoice.");
     }
   };
 
+  /*
+
   const handleSend = async (id) => {
     setSendingId(id);
+
     try {
       await sendInvoice(id);
+
       setInvoices((prev) =>
-        prev.map((inv) => (inv.id === id ? { ...inv, status: "SENT" } : inv)),
+        prev.map((inv) =>
+          inv.id === id ? { ...inv, status: "SENT" } : inv
+        )
       );
+
       toast.success("Invoice sent successfully!");
     } catch (err) {
       console.error("Failed to send invoice:", err);
+
       if (err.response?.status === 500) {
-        toast.error("Unable to send invoice email. Please try again.");
+        toast.error(
+          "Unable to send invoice email. Please try again."
+        );
       } else if (err.response?.status === 404) {
         toast.error("Invoice not found.");
-      } else if (err.response?.status === 401 || err.response?.status === 403) {
-        toast.error("Your session has expired. Please log in again.");
+      } else if (
+        err.response?.status === 401 ||
+        err.response?.status === 403
+      ) {
+        toast.error(
+          "Your session has expired. Please log in again."
+        );
+
         logout();
       } else {
-        toast.error(err.response?.data?.error || "Failed to send invoice.");
+        toast.error(
+          err.response?.data?.error ||
+            "Failed to send invoice."
+        );
       }
     } finally {
       setSendingId(null);
+    }
+  };
+  */
+
+  const handleStatusChange = async (id, status) => {
+    try {
+      await updateInvoiceStatus(id, {
+        id,
+        status,
+      });
+
+      setInvoices((prev) =>
+        prev.map((inv) => (inv.id === id ? { ...inv, status } : inv)),
+      );
+
+      toast.success("Invoice status updated successfully!");
+    } catch (err) {
+      console.error("Failed to update invoice status:", err);
+
+      toast.error(
+        err.response?.data?.error || "Failed to update invoice status.",
+      );
     }
   };
 
@@ -81,13 +148,14 @@ export default function InvoicesPage() {
         <div className="shrink-0">
           <div className="flex justify-between items-center mb-6">
             <div>
-              <button
-                onClick={() => navigate(-1)}
+              <Link
+                to="/dashboard"
                 className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
               >
                 <span className="sm:hidden">← Back</span>
+
                 <span className="hidden sm:inline">← Back to Dashboard</span>
-              </button>
+              </Link>
 
               <h1 className="text-2xl font-bold text-gray-900 dark:text-white mt-2">
                 Invoices
@@ -130,72 +198,118 @@ export default function InvoicesPage() {
                   <thead className="bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-sm">
                     <tr>
                       <th className="px-4 py-3">Invoice #</th>
+
                       <th className="px-4 py-3">Client</th>
+
                       <th className="px-4 py-3">Due Date</th>
+
                       <th className="px-4 py-3">Status</th>
+
                       <th className="px-4 py-3 text-right">Total</th>
+
                       <th className="px-4 py-3 text-right">Actions</th>
                     </tr>
                   </thead>
 
                   <tbody>
-                    {invoices.map((inv) => (
-                      <tr
-                        key={inv.id}
-                        className="border-t border-gray-100 dark:border-gray-700"
-                      >
-                        <td className="px-4 py-3 font-medium text-gray-900 dark:text-white whitespace-nowrap">
-                          {inv.invoiceNumber}
-                        </td>
+                    {invoices.map((inv) => {
+                      const allowedStatuses = getAllowedNextStatuses(
+                        inv.status,
+                      );
 
-                        <td className="px-4 py-3 text-gray-600 dark:text-gray-300 max-w-[180px] break-words">
-                          {inv.clientName}
-                        </td>
+                      return (
+                        <tr
+                          key={inv.id}
+                          className="border-t border-gray-100 dark:border-gray-700"
+                        >
+                          <td className="px-4 py-3 font-medium text-gray-900 dark:text-white whitespace-nowrap">
+                            {inv.invoiceNumber}
+                          </td>
 
-                        <td className="px-4 py-3 text-gray-600 dark:text-gray-300 whitespace-nowrap">
-                          {inv.dueDate}
-                        </td>
+                          <td className="px-4 py-3 text-gray-600 dark:text-gray-300 max-w-[180px] break-words">
+                            {inv.clientName}
+                          </td>
 
-                        <td className="px-4 py-3">
-                          <span
-                            className={`px-2 py-1 rounded-full text-xs font-medium ${statusColors[inv.status]}`}
-                          >
-                            {inv.status}
-                          </span>
-                        </td>
+                          <td className="px-4 py-3 text-gray-600 dark:text-gray-300 whitespace-nowrap">
+                            {inv.dueDate}
+                          </td>
 
-                        <td className="px-4 py-3 text-right text-gray-900 dark:text-white whitespace-nowrap">
-                          {inv.currencySymbol}
-                          {Number(inv.total).toFixed(2)}
-                        </td>
-
-                        <td className="px-4 py-3 text-right space-x-3 whitespace-nowrap">
-                          <button
-                            onClick={() => setPreviewInvoice(inv)}
-                            className="text-blue-600 dark:text-blue-400 hover:underline text-sm font-medium"
-                          >
-                            PDF
-                          </button>
-
-                          {inv.status === "DRAFT" && (
-                            <button
-                              onClick={() => handleSend(inv.id)}
-                              disabled={sendingId === inv.id}
-                              className="text-green-600 dark:text-green-400 hover:underline text-sm font-medium disabled:opacity-50"
+                          {/* Status */}
+                          <td className="px-4 py-3">
+                            <select
+                              value={inv.status}
+                              onChange={(e) =>
+                                handleStatusChange(inv.id, e.target.value)
+                              }
+                              disabled={allowedStatuses.length === 0}
+                              className={`
+                                w-32
+                                rounded-lg
+                                border
+                                border-gray-300
+                                bg-white
+                                px-3
+                                py-2
+                                text-sm
+                                font-medium
+                                ${statusColors[inv.status]}
+                                dark:border-gray-600
+                                focus:outline-none
+                                focus:ring-2
+                                focus:ring-blue-500
+                                disabled:cursor-not-allowed
+                                disabled:opacity-70
+                              `}
                             >
-                              {sendingId === inv.id ? "Sending..." : "Send"}
-                            </button>
-                          )}
+                              {/* Current status */}
+                              <option value={inv.status}>{inv.status}</option>
 
-                          <button
-                            onClick={() => handleDelete(inv.id)}
-                            className="text-red-600 dark:text-red-400 hover:underline text-sm font-medium"
-                          >
-                            Delete
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
+                              {/* Allowed next statuses */}
+                              {allowedStatuses.map((status) => (
+                                <option key={status} value={status}>
+                                  {status}
+                                </option>
+                              ))}
+                            </select>
+                          </td>
+
+                          <td className="px-4 py-3 text-right text-gray-900 dark:text-white whitespace-nowrap">
+                            {inv.currencySymbol}
+                            {Number(inv.total).toFixed(2)}
+                          </td>
+
+                          {/* Actions */}
+                          <td className="px-4 py-3 text-right space-x-3 whitespace-nowrap">
+                            <button
+                              onClick={() => setPreviewInvoice(inv)}
+                              className="text-blue-600 dark:text-blue-400 hover:underline text-sm font-medium"
+                            >
+                              PDF
+                            </button>
+
+                            {/* Send button temporarily disabled because SMTP is unavailable */}
+
+                            {inv.status === "DRAFT" && (
+                              <button
+                                onClick={() =>
+                                  navigate(`/invoices/${inv.id}/edit`)
+                                }
+                                className="text-blue-600 dark:text-blue-400 hover:underline text-sm font-medium"
+                              >
+                                Edit
+                              </button>
+                            )}
+
+                            <button
+                              onClick={() => handleDelete(inv.id)}
+                              className="text-red-600 dark:text-red-400 hover:underline text-sm font-medium"
+                            >
+                              Delete
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>

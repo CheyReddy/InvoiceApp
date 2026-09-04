@@ -33,7 +33,7 @@ export const dashboardConfig = [
     appName: "Invoices & Payments Dashboard",
     toUrl: "/invoices",
     icon: Receipt,
-    appStatus: "COMPLETED",
+    appStatus: "IN_PROGRESS",
   },
   {
     appName: "Expenses Dashboard",

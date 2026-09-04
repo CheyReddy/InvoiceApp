@@ -2,6 +2,8 @@ package com.cwebworks.invoiceapp.controller;
 
 import com.cwebworks.invoiceapp.dto.InvoiceRequest;
 import com.cwebworks.invoiceapp.dto.InvoiceResponse;
+import com.cwebworks.invoiceapp.dto.InvoiceStatusRequestResponse;
+import com.cwebworks.invoiceapp.dto.InvoiceUpdateRequest;
 import com.cwebworks.invoiceapp.service.InvoiceService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -75,5 +77,15 @@ public class InvoiceController {
         return ResponseEntity.ok().build();
     }
 
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<InvoiceStatusRequestResponse> updateInvoiceStatus(Authentication authentication, @RequestBody InvoiceStatusRequestResponse request){
+        return ResponseEntity.ok(invoiceService.updateInvoiceStatus(authentication.getName(), request));
+    }
+
+    @Operation(summary = "Update a draft Invoice")
+    @PutMapping("/{id}")
+    public ResponseEntity<InvoiceResponse> updateInvoice(@PathVariable Long id, @RequestBody InvoiceUpdateRequest request, Authentication authentication){
+        return ResponseEntity.ok(invoiceService.updateInvoice(id,request, authentication.getName()));
+    }
 
 }

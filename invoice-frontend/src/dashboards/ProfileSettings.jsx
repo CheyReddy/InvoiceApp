@@ -294,7 +294,7 @@ function ProfileSettings() {
                 className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
               >
                 <span className="sm:hidden">← Back</span>
-                <span className="hidden sm:inline">← Back to Dashboard</span>
+                <span className="hidden sm:inline">← Back to Hub</span>
               </Link>
             </div>
             <div className="flex items-center gap-3">

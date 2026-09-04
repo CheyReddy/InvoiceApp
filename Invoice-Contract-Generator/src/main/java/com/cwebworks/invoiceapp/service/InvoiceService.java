@@ -1,9 +1,7 @@
 package com.cwebworks.invoiceapp.service;
 
 import com.cwebworks.invoiceapp.constants.InvoiceStatus;
-import com.cwebworks.invoiceapp.dto.InvoiceItemResponse;
-import com.cwebworks.invoiceapp.dto.InvoiceRequest;
-import com.cwebworks.invoiceapp.dto.InvoiceResponse;
+import com.cwebworks.invoiceapp.dto.*;
 import com.cwebworks.invoiceapp.entity.Client;
 import com.cwebworks.invoiceapp.entity.Invoice;
 import com.cwebworks.invoiceapp.entity.InvoiceItem;
@@ -18,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -37,11 +37,17 @@ public class InvoiceService {
         Client client = clientRepository.findByIdAndUserEmail(request.getClientId(), userEmail)
                 .orElseThrow(() -> new NoSuchElementException("Client not found"));
 
+        LocalDate today = LocalDate.now(ZoneId.of("Asia/Kolkata"));
+
         Invoice invoice = new Invoice();
         invoice.setUser(user);
         invoice.setClient(client);
         invoice.setInvoiceNumber(generateInvoiceNumber(userEmail));
-        invoice.setStatus(InvoiceStatus.DRAFT);
+        if (request.getDueDate().isBefore(today)) {
+            invoice.setStatus(InvoiceStatus.OVERDUE);
+        }else{
+            invoice.setStatus(InvoiceStatus.DRAFT);
+        }
         invoice.setDueDate(request.getDueDate());
         invoice.setTaxPercent(request.getTaxPercent());
         invoice.setCurrencyCode(CurrencyUtil.currencyCodeForCountry(client.getCountry()));
@@ -95,8 +101,9 @@ public class InvoiceService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     public InvoiceResponse getInvoiceById(Long id, String userEmail){
-        Invoice response = invoiceRepository.findByIdAndUserEmail(id,userEmail)
+        Invoice response = invoiceRepository.findByIdAndUserEmailWithItems(id,userEmail)
                 .orElseThrow(() -> new NoSuchElementException("Invoice not found"));
         return convertToResponse(response);
     }
@@ -157,5 +164,88 @@ public class InvoiceService {
         invoice.setStatus(InvoiceStatus.SENT);
         invoiceRepository.save(invoice);
     }
+
+    public InvoiceStatusRequestResponse updateInvoiceStatus(
+            String email,
+            InvoiceStatusRequestResponse request
+    ) {
+        Invoice invoice = invoiceRepository
+                .findByIdAndUserEmailWithItems(request.getId(), email)
+                .orElseThrow(() ->
+                        new NoSuchElementException("Invoice not found.")
+                );
+        InvoiceStatus currentStatus = invoice.getStatus();
+        InvoiceStatus newStatus;
+        try {
+            newStatus = InvoiceStatus.valueOf(
+                    request.getStatus().toUpperCase()
+            );
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException(
+                    "Invalid invoice status: " + request.getStatus()
+            );
+        }
+        boolean validTransition = switch (currentStatus) {
+            case DRAFT ->
+                    newStatus == InvoiceStatus.SENT;
+            case SENT ->
+                    newStatus == InvoiceStatus.PAID
+                            || newStatus == InvoiceStatus.OVERDUE;
+            case OVERDUE ->
+                    newStatus == InvoiceStatus.PAID;
+            case PAID ->
+                    false;
+        };
+        if (!validTransition) {
+            throw new IllegalArgumentException(
+                    "Invalid status transition: "
+                            + currentStatus
+                            + " → "
+                            + newStatus
+            );
+        }
+        invoice.setStatus(newStatus);
+        Invoice saved = invoiceRepository.save(invoice);
+        return InvoiceStatusRequestResponse.builder()
+                .id(saved.getId())
+                .status(saved.getStatus().name())
+                .build();
+    }
+
+    @Transactional
+    public InvoiceResponse updateInvoice(Long id, InvoiceUpdateRequest request, String userEmail){
+        Invoice invoice = invoiceRepository.findByIdAndUserEmail(id,userEmail)
+                .orElseThrow(() -> new NoSuchElementException("Invoice not found"));
+
+        if(invoice.getStatus() != InvoiceStatus.DRAFT){
+            throw new IllegalArgumentException("Only draft invoices can be edited");
+        }
+
+        invoice.setDueDate(request.getDueDate());
+        invoice.setTaxPercent(request.getTaxPercent());
+
+        invoice.getItems().clear();
+
+        List<InvoiceItem> updatedItems = request.getItems()
+                .stream()
+                .map(itemReq -> {
+                    InvoiceItem item = new InvoiceItem();
+                    item.setInvoice(invoice);
+                    item.setDescription(itemReq.getDescription());
+                    item.setQuantity(itemReq.getQuantity());
+                    item.setUnitPrice(itemReq.getUnitPrice());
+
+                    return item;
+                })
+                .toList();
+
+        invoice.getItems().addAll(updatedItems);
+
+        invoice.setTotal(calculateTotal(updatedItems, request.getTaxPercent()));
+
+        Invoice saved = invoiceRepository.save(invoice);
+        return convertToResponse(saved);
+    }
+
 
 }

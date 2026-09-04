@@ -5,6 +5,8 @@ export const getInvoice = (id) => axiosInstance.get(`/invoices/${id}`);
 export const createInvoice = (data) => axiosInstance.post('/invoices', data);
 export const deleteInvoice = (id) => axiosInstance.delete(`/invoices/${id}`);
 export const sendInvoice = (id) => axiosInstance.post(`/invoices/${id}/send`);
+export const updateInvoiceStatus = (id, data) => axiosInstance.patch(`/invoices/${id}/status`, data);
+export const updateInvoice = (id, data) => axiosInstance.put(`/invoices/${id}`, data);
 
 export const downloadInvoicePdf = async (id, invoiceNumber) => {
   const response = await axiosInstance.get(`/invoices/${id}/pdf`, {

@@ -10,6 +10,7 @@ import CreateInvoicePage from "./pages/CreateInvoicePage.jsx";
 import HubHomePage from "./pages/HubHomePage.jsx";
 import { Toaster } from "react-hot-toast";
 import ProfileSettings from "./dashboards/ProfileSettings.jsx";
+import EditInvoicePage from "./pages/EditInvoicePage.jsx";
 
 function App() {
   return (
@@ -76,6 +77,15 @@ function App() {
           element={
             <ProtectedRoute>
               <ProfileSettings />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/invoices/:id/edit"
+          element={
+            <ProtectedRoute>
+              <EditInvoicePage />
             </ProtectedRoute>
           }
         />
